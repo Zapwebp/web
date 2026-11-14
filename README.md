@@ -1,2 +1,6 @@
-# web
-The browser interface. Runs conversions 100% locally in memory.
+# Zapwebp web
+
+Official repository for Zapwebp web.
+
+- Website: https://zapwebp.vercel.app
+- Docs: https://zapwebp-docs.vercel.app
