@@ -12,11 +12,11 @@
     />
     <meta name="theme-color" content="#f7f7f4" id="meta-theme-color" />
     <title>
-      Zapwebp Converter — Fast &amp; Free Online WebP &amp; Image Converter
+      Zapwebp Converter (Zap WebP) — Fast &amp; Free Online WebP &amp; Image Converter
     </title>
     <meta
       name="description"
-      content="Zapwebp Converter: Free, fast, in-browser WebP and image converter with 100% privacy and zero server uploads. Convert SVG, PNG, JPG, and AVIF preserving transparency."
+      content="Zapwebp Converter (Zap WebP): Free, fast, in-browser WebP and image converter with 100% privacy and zero server uploads. Convert SVG, PNG, JPG, and AVIF preserving transparency."
     />
     <meta
       name="keywords"
@@ -184,15 +184,45 @@
             "publisher": { "@id": "https://zapwebp.vercel.app/#organization" }
           },
           {
+            "@type": "BreadcrumbList",
+            "@id": "https://zapwebp.vercel.app/#breadcrumbs",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Zapwebp Converter",
+                "item": "https://zapwebp.vercel.app/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "PNG to WebP Converter",
+                "item": "https://zapwebp.vercel.app/png-to-webp"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "SVG to WebP Converter",
+                "item": "https://zapwebp.vercel.app/svg-to-webp"
+              },
+              {
+                "@type": "ListItem",
+                "position": 4,
+                "name": "JPG to WebP Converter",
+                "item": "https://zapwebp.vercel.app/jpg-to-webp"
+              }
+            ]
+          },
+          {
             "@type": "FAQPage",
             "@id": "https://zapwebp.vercel.app/#faq",
             "mainEntity": [
               {
                 "@type": "Question",
-                "name": "What is Zapwebp Converter?",
+                "name": "What is Zapwebp Converter (Zap Webp Converter)?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Zapwebp Converter is a free, high-performance online WebP and image converter that runs 100% locally in your browser memory. It converts SVG, PNG, JPEG, WebP, AVIF, GIF, and TIFF images while preserving transparency and stripping EXIF metadata without any server uploads."
+                  "text": "Zapwebp Converter (also searched as Zap Webp Converter or Zap WebP) is a free, high-performance online WebP and image converter that runs 100% locally in your browser memory. It converts SVG, PNG, JPEG, WebP, AVIF, GIF, and TIFF images while preserving transparency and stripping EXIF metadata without any server uploads."
                 }
               },
               {
@@ -286,19 +316,60 @@
             data-i18n="nav.mcp"
             >MCP</a
           >
+          <button
+            type="button"
+            class="nav-link nav-link-reports"
+            id="nav-reports-btn"
+            aria-label="View Performance Report"
+            style="background: transparent; border: none; font: inherit; cursor: pointer;"
+            >Reports</button>
         </nav>
 
         <div class="header-right">
-          <!-- Language Toggle Button (Header) -->
-          <button
-            type="button"
-            class="header-lang-btn"
-            id="header-lang-btn"
-            aria-label="Toggle language"
-            title="Switch language (EN / TL)"
-          >
-            🌐 EN
-          </button>
+          <!-- Accessible Language Dropdown (Zapwebp Standard) -->
+          <div class="lang-dropdown-wrap" id="header-lang-dropdown-wrap">
+            <button
+              type="button"
+              class="control-btn lang-dropdown-btn header-lang-btn"
+              id="header-lang-btn"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-label="Select language"
+              title="Select language (EN / TL)"
+            >
+              <svg class="globe-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span class="lang-current-label" id="header-lang-current-label">English</span>
+              <svg class="chevron-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="lang-dropdown-menu" id="header-lang-dropdown-menu" hidden>
+              <div class="dropdown-header">
+                <span data-i18n="header.language">Language</span>
+              </div>
+              <div class="dropdown-items-group" id="header-lang-options-group">
+                <button type="button" class="dropdown-item is-active" data-locale="en">
+                  <span class="loc-name">English</span>
+                  <span class="loc-code">EN</span>
+                  <span class="loc-check">✓</span>
+                </button>
+                <button type="button" class="dropdown-item" data-locale="tl">
+                  <span class="loc-name">Tagalog</span>
+                  <span class="loc-code">TL</span>
+                </button>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a href="https://github.com/Zapwebp/zapwebp/tree/main/locales" target="_blank" rel="noopener noreferrer" class="dropdown-item dropdown-item-contribute">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span data-i18n="header.contribute_translation">Contribute translation</span>
+                <span class="ext-arrow">↗</span>
+              </a>
+            </div>
+          </div>
 
           <!-- Single Theme Toggle (Light / Dark) -->
           <button
@@ -391,19 +462,10 @@
 
     <!-- Page Body -->
     <main class="page-content" id="main-content">
-      <!-- Hero & Converter Section -->
+      <!-- Converter Workspace (Above the fold, always) -->
       <section class="hero-section tool-workspace">
-        <div class="hero-brand-header" style="margin-bottom: 1.5rem; text-align: center;">
-          <h1 class="hero-title" style="font-size: 2rem; font-weight: 800; letter-spacing: -0.025em; margin: 0 0 0.5rem 0; color: var(--text-primary, #ffffff);">
-            Zapwebp Converter
-          </h1>
-          <p class="hero-tagline" style="font-size: 1rem; color: var(--text-secondary, #94a3b8); margin: 0 auto; max-width: 580px; line-height: 1.5;">
-            Fast, free, privacy-first online WebP &amp; image converter with guaranteed transparency preservation. Runs 100% locally in your browser.
-          </p>
-        </div>
-
         <!-- Lossless & Size Limit Conflict Warning Banner -->
-        <div
+        <zap-banner
           class="lossless-conflict-banner"
           id="lossless-conflict-banner"
           hidden
@@ -436,10 +498,10 @@
               Remove Size Limit
             </button>
           </div>
-        </div>
+        </zap-banner>
 
         <!-- Lossless Degraded Source (JPEG) Warning Banner -->
-        <div
+        <zap-banner
           class="lossless-conflict-banner lossless-degraded-banner"
           id="lossless-degraded-banner"
           hidden
@@ -470,7 +532,7 @@
               Keep Lossless
             </button>
           </div>
-        </div>
+        </zap-banner>
 
         <!-- The Interactive Converter -->
         <div class="converter-card" id="converter-container" toolname="convert_image" tooldescription="Convert images into WebP, AVIF, PNG, or JPEG with guaranteed transparency preservation in local browser memory">
@@ -484,7 +546,7 @@
           />
 
           <!-- Dropzone Workspace -->
-          <div
+          <zap-dropzone
             class="dropzone-area"
             id="dropzone"
             tabindex="0"
@@ -510,23 +572,13 @@
               </div>
 
               <div class="drop-title" data-i18n="dropzone.title">
-                <span class="highlight-action">Drop images here</span> or
+                <span class="highlight-action">Drop or paste images</span> or
                 <span class="browse-link">browse files</span>
               </div>
 
               <p class="drop-subtitle" data-i18n="dropzone.subtitle">
-                Select single files, batches, or folders.
+                SVG · PNG · JPG · WebP · AVIF · HEIC
               </p>
-
-              <div class="supported-chips" aria-label="Supported file formats">
-                <span class="fmt-chip chip-alpha">SVG</span>
-                <span class="fmt-chip chip-alpha">PNG</span>
-                <span class="fmt-chip chip-alpha">WEBP</span>
-                <span class="fmt-chip chip-alpha">AVIF</span>
-                <span class="fmt-chip">JPEG</span>
-                <span class="fmt-chip chip-alpha">GIF</span>
-                <span class="fmt-chip">TIFF</span>
-              </div>
             </div>
 
             <!-- Converting Progress State -->
@@ -716,674 +768,189 @@
               hidden
               aria-live="polite"
             ></div>
-          </div>
+          </zap-dropzone>
 
           <!-- Integrated Controls Bar -->
           <div class="cockpit-bar">
-            <!-- Target Format Control -->
+            <!-- Row 1: Target Format Pills -->
             <div class="bar-control-item bar-format-item">
-              <div class="format-header-row">
-                <span class="bar-control-label" data-i18n="cockpit.format"
-                  >Format</span
-                >
-                <button
-                  type="button"
-                  class="cockpit-toggle-btn"
-                  id="cockpit-toggle-btn"
-                  aria-expanded="false"
-                  aria-controls="cockpit-advanced-controls"
-                  title="Toggle conversion settings"
-                >
-                  <svg
-                    width="13"
-                    height="13"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path
-                      d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
-                    ></path>
-                  </svg>
-                  <span
-                    class="cockpit-toggle-label"
-                    data-i18n="cockpit.settings"
-                    >Settings</span
-                  >
-                  <svg
-                    class="cockpit-toggle-chevron"
-                    width="11"
-                    height="11"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </button>
-              </div>
-              <div
-                class="format-pills"
-                id="format-pills"
-                role="radiogroup"
-                aria-label="Target format"
-              >
-                <button
-                  type="button"
-                  class="fmt-select-btn is-active"
-                  data-format="webp"
-                  role="radio"
-                  aria-checked="true"
-                >
-                  WebP
-                </button>
-                <button
-                  type="button"
-                  class="fmt-select-btn"
-                  data-format="avif"
-                  role="radio"
-                  aria-checked="false"
-                >
-                  AVIF
-                </button>
-                <button
-                  type="button"
-                  class="fmt-select-btn"
-                  data-format="png"
-                  role="radio"
-                  aria-checked="false"
-                >
-                  PNG
-                </button>
-                <button
-                  type="button"
-                  class="fmt-select-btn"
-                  data-format="jpeg"
-                  role="radio"
-                  aria-checked="false"
-                >
-                  JPEG
-                </button>
+              <span class="bar-control-label" data-i18n="cockpit.format">Format</span>
+              <div class="format-pills" id="format-pills" role="radiogroup" aria-label="Target format">
+                <button type="button" class="fmt-select-btn is-active" data-format="webp" role="radio" aria-checked="true">WebP</button>
+                <button type="button" class="fmt-select-btn" data-format="avif" role="radio" aria-checked="false">AVIF</button>
+                <button type="button" class="fmt-select-btn" data-format="png" role="radio" aria-checked="false">PNG</button>
+                <button type="button" class="fmt-select-btn" data-format="jpeg" role="radio" aria-checked="false">JPEG</button>
               </div>
             </div>
 
-            <!-- Advanced Controls Cluster (Desktop: inline flex; Mobile: collapsible via toggle button) -->
-            <div
-              class="cockpit-advanced-cluster"
-              id="cockpit-advanced-controls"
-            >
-              <!-- Background Flatten Color (Visible when JPEG target is selected) -->
-              <div class="bar-control-item bar-bg-item" id="bar-bg-item" hidden>
-                <span class="bar-control-label" data-i18n="cockpit.background"
-                  >Background</span
-                >
-                <div class="bg-picker-wrap">
-                  <input
-                    type="color"
-                    id="bg-color-picker"
-                    class="bg-color-input"
-                    value="#ffffff"
-                    title="Flatten background color for JPEG (default: white)"
-                    aria-label="Flatten background color"
-                  />
-                  <span class="bg-hex-label" id="bg-hex-label">#FFFFFF</span>
-                </div>
+            <!-- Row 2: Quality Slider -->
+            <div class="bar-control-item bar-slider-item">
+              <div class="slider-label-row">
+                <span class="bar-control-label" data-i18n="cockpit.quality">Quality</span>
+                <span class="quality-display" id="quality-display">85%</span>
               </div>
+              <input class="quality-bar" id="quality" type="range" min="1" max="100" value="85" aria-label="Conversion quality" />
+            </div>
 
-              <!-- Scale Multipliers -->
-              <div class="bar-control-item bar-scales-item">
-                <span class="bar-control-label" data-i18n="cockpit.scales"
-                  >Scales</span
-                >
-                <div
-                  class="scale-toggles"
-                  id="scale-toggles"
-                  role="group"
-                  aria-label="Scale multipliers"
-                >
-                  <button
-                    type="button"
-                    class="scale-btn is-active"
-                    data-scale="1"
-                    aria-pressed="true"
-                  >
-                    1x
-                  </button>
-                  <button
-                    type="button"
-                    class="scale-btn"
-                    data-scale="2"
-                    aria-pressed="false"
-                  >
-                    2x
-                  </button>
-                  <button
-                    type="button"
-                    class="scale-btn"
-                    data-scale="3"
-                    aria-pressed="false"
-                  >
-                    3x
-                  </button>
-                </div>
+            <!-- Row 3: Clean Metadata Toggle -->
+            <div class="bar-control-item bar-modes-item">
+              <span class="bar-control-label" data-i18n="cockpit.clean_metadata">Metadata</span>
+              <div class="toggles-cluster">
+                <label class="switch-toggle-card clean-toggle-card clean-toggle-label is-active" id="clean-toggle-card" title="Strip EXIF, XMP, GPS, and C2PA provenance metadata">
+                  <input type="checkbox" id="clean-toggle" checked />
+                  <span class="switch-pill" aria-hidden="true">
+                    <span class="switch-pill-thumb"></span>
+                  </span>
+                  <span class="switch-title" data-i18n="cockpit.clean_mode">Clean metadata</span>
+                </label>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-              <!-- Quality Slider -->
-              <div class="bar-control-item bar-slider-item">
-                <div class="slider-label-row">
-                  <span class="bar-control-label" data-i18n="cockpit.quality"
-                    >Quality</span
-                  >
-                  <span class="quality-display" id="quality-display">85%</span>
-                </div>
-                <input
-                  class="quality-bar"
-                  id="quality"
-                  type="range"
-                  min="1"
-                  max="100"
-                  value="85"
-                  aria-label="Conversion quality"
-                />
-              </div>
+      <!-- The Five Guarantees: AI-Ready Image Infrastructure -->
+      <section class="guarantees-section" id="guarantees" aria-labelledby="guarantees-title" style="max-width: 1040px; margin: 3rem auto; padding: 0 1.25rem;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <h2 id="guarantees-title" style="font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.5rem; color: var(--text-primary);">
+            AI-Ready Image Infrastructure · The Five Guarantees
+          </h2>
+          <p style="font-size: 0.95rem; color: var(--text-secondary, #94a3b8); max-width: 680px; margin: 0 auto; line-height: 1.5;">
+            Zapwebp Converter (also known as Zap Webp Converter) eliminates guesswork. We stop marketing features and start proving technical guarantees.
+          </p>
+        </div>
 
-              <!-- Dual Modes (Lossless & Clean Mode Toggles) -->
-              <div class="bar-control-item bar-modes-item">
-                <span class="bar-control-label" data-i18n="cockpit.modes"
-                  >Modes</span
-                >
-                <div class="toggles-cluster">
-                  <!-- Lossless Switch Toggle -->
-                  <label
-                    class="switch-toggle-card lossless-toggle-card clean-toggle-label"
-                    id="lossless-toggle-card"
-                    title="Preserve 100% pixel fidelity without lossy compression artifacts"
-                  >
-                    <input type="checkbox" id="lossless-toggle" />
-                    <span class="switch-pill" aria-hidden="true">
-                      <span class="switch-pill-thumb"></span>
-                    </span>
-                    <span class="switch-title" data-i18n="cockpit.lossless"
-                      >Lossless</span
-                    >
-                  </label>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+          <!-- 1. Correctness -->
+          <div style="background: var(--bg-card, #171a15); border: 1px solid var(--border-mid, rgba(255,255,255,0.08)); border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.75rem;">
+              <span style="font-size: 1.25rem;">🎯</span>
+              <h3 style="font-size: 1.1rem; font-weight: 600; margin: 0; color: var(--text-primary);">1. Correctness</h3>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--text-secondary, #94a3b8); line-height: 1.45; margin: 0 0 0.75rem 0; flex-grow: 1;">
+              Output pixel (0,0) transparency preservation is verified in continuous integration. If transparent input is targeted to JPEG without an explicit background, it fails loudly instead of creating corrupted black boxes.
+            </p>
+            <div style="font-size: 0.75rem; font-family: var(--font-mono, monospace); color: #22c55e;">
+              Status: Verified in CI (test/proof-transparency.test.js)
+            </div>
+          </div>
 
-                  <!-- Clean Mode Switch Toggle -->
-                  <label
-                    class="switch-toggle-card clean-toggle-card clean-toggle-label is-active"
-                    id="clean-toggle-card"
-                    title="Strip EXIF, XMP, GPS, and C2PA provenance metadata"
-                  >
-                    <input type="checkbox" id="clean-toggle" checked />
-                    <span class="switch-pill" aria-hidden="true">
-                      <span class="switch-pill-thumb"></span>
-                    </span>
-                    <span class="switch-title" data-i18n="cockpit.clean_mode"
-                      >Clean Mode</span
-                    >
-                  </label>
-                </div>
-                <div
-                  class="lossless-inline-guidance"
-                  id="lossless-inline-guidance"
-                  hidden
-                  style="font-size: 0.72rem; color: var(--text-muted, #94a3b8); margin-top: 4px; line-height: 1.3;"
-                >
-                  ℹ️ Mathematical pixel preservation (0 dB loss). Does not repair blurry or degraded sources.
-                </div>
-              </div>
+          <!-- 2. Reproducibility -->
+          <div style="background: var(--bg-card, #171a15); border: 1px solid var(--border-mid, rgba(255,255,255,0.08)); border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.75rem;">
+              <span style="font-size: 1.25rem;">🔒</span>
+              <h3 style="font-size: 1.1rem; font-weight: 600; margin: 0; color: var(--text-primary);">2. Reproducibility</h3>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--text-secondary, #94a3b8); line-height: 1.45; margin: 0 0 0.75rem 0; flex-grow: 1;">
+              Same input, same configuration, same engine version produces identical bit-for-bit outputs. All 50 Golden Corpus test fixtures are published with SHA-256 hashes in public MANIFEST.json.
+            </p>
+            <div style="font-size: 0.75rem; font-family: var(--font-mono, monospace); color: #22c55e;">
+              Status: 50/50 Bit-for-bit parity guaranteed
+            </div>
+          </div>
+
+          <!-- 3. Privacy -->
+          <div style="background: var(--bg-card, #171a15); border: 1px solid var(--border-mid, rgba(255,255,255,0.08)); border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.75rem;">
+              <span style="font-size: 1.25rem;">🛡️</span>
+              <h3 style="font-size: 1.1rem; font-weight: 600; margin: 0; color: var(--text-primary);">3. Privacy</h3>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--text-secondary, #94a3b8); line-height: 1.45; margin: 0 0 0.75rem 0; flex-grow: 1;">
+              100% in-browser client memory execution using WebAssembly and Web Workers. Zero telemetry, zero analytics beacons, zero remote server uploads. Your visual data never leaves your machine.
+            </p>
+            <div style="font-size: 0.75rem; font-family: var(--font-mono, monospace); color: #22c55e;">
+              Status: Zero Network Leaks Verified
+            </div>
+          </div>
+
+          <!-- 4. Extensibility -->
+          <div style="background: var(--bg-card, #171a15); border: 1px solid var(--border-mid, rgba(255,255,255,0.08)); border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.75rem;">
+              <span style="font-size: 1.25rem;">🔌</span>
+              <h3 style="font-size: 1.1rem; font-weight: 600; margin: 0; color: var(--text-primary);">4. Extensibility</h3>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--text-secondary, #94a3b8); line-height: 1.45; margin: 0 0 0.75rem 0; flex-grow: 1;">
+              Standardized Plugin SDK with lifecycle hooks (beforeConvert, afterConvert, transform). Community and first-party plugins for multi-size ICO/CUR, smart face-crop, storage adapters, and build tools.
+            </p>
+            <div style="font-size: 0.75rem; font-family: var(--font-mono, monospace); color: #22c55e;">
+              Status: Open Plugin SDK & Registry
+            </div>
+          </div>
+
+          <!-- 5. Universality -->
+          <div style="background: var(--bg-card, #171a15); border: 1px solid var(--border-mid, rgba(255,255,255,0.08)); border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.75rem;">
+              <span style="font-size: 1.25rem;">🌐</span>
+              <h3 style="font-size: 1.1rem; font-weight: 600; margin: 0; color: var(--text-primary);">5. Universality</h3>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--text-secondary, #94a3b8); line-height: 1.45; margin: 0 0 0.75rem 0; flex-grow: 1;">
+              One shared conversion engine running uniformly across Web, CLI (zap/zapwebp), VS Code extension, HTTP REST API, and AI agent Model Context Protocol (MCP) servers.
+            </p>
+            <div style="font-size: 0.75rem; font-family: var(--font-mono, monospace); color: #22c55e;">
+              Status: 5 Execution Surfaces
             </div>
           </div>
         </div>
       </section>
     </main>
 
-    <!-- Rich App Footer & Documentation Sitemap -->
-    <footer class="app-footer" role="contentinfo">
-      <div class="footer-container">
-        <!-- Brand & Mission Header -->
-        <div class="footer-brand-section">
-          <div class="footer-brand-main">
-            <a href="/" class="footer-brand-link" title="Zapwebp Home">
-              <img
-                src="/zapwebp.svg"
-                class="footer-brand-logo"
-                width="32"
-                height="32"
-                alt="Zapwebp logo"
-              />
-              <span class="footer-brand-name">Zapwebp</span>
-            </a>
-            <p class="footer-brand-desc" data-i18n="footer.tagline">
-              Transparency-safe image conversion across developer terminals, AI
-              agents, code editors, and browsers with zero server uploads.
-            </p>
+    <!-- SEO & Technical Architecture Section (Below the fold) -->
+      <section class="seo-content" id="seo-content">
+        <div class="seo-inner">
+          <h2 class="seo-main-heading">Zapwebp — Free SVG, PNG, JPG to WebP Converter</h2>
+          <p class="seo-lead-text">
+            Zapwebp is a fast, 100% private in-browser image converter built for developers, designers, and web performance engineers. Convert transparent SVGs, high-resolution PNGs, photos, AVIFs, and WebPs in milliseconds with guaranteed alpha channel preservation, mathematical lossless verification, and zero server uploads.
+          </p>
+
+          <h3 class="seo-subheading">Why Zapwebp?</h3>
+          <ul class="seo-benefits-list">
+            <li><strong>100% Local In-Memory Processing:</strong> Your visual data never leaves your device or touches a third-party server. Pure WebAssembly and Canvas execution.</li>
+            <li><strong>Deterministic Alpha Preservation:</strong> Alpha channels are mathematically preserved. Transparent pixels never turn into black boxes.</li>
+            <li><strong>Clean Metadata Stripping:</strong> Strip EXIF, GPS location, and camera hardware serials with a single click before sharing.</li>
+            <li><strong>Instant Batch ZIP Bundles:</strong> Convert dozens of images at once and download everything in an uncompressed or high-speed ZIP archive.</li>
+            <li><strong>Developer-Ready Ecosystem:</strong> Powered by the exact same open-source engine available as an MCP AI Agent server, CLI, and npm SDK.</li>
+          </ul>
+
+          <h3 class="seo-subheading">Frequently Asked Questions</h3>
+          <div class="seo-faqs">
+            <details class="seo-faq-item">
+              <summary>Is Zapwebp completely free?</summary>
+              <p>Yes. Zapwebp is 100% free and open-source under the MIT license. There are no subscriptions, no file size paywalls, and no account requirements.</p>
+            </details>
+            <details class="seo-faq-item">
+              <summary>Does Zapwebp upload my images to a server?</summary>
+              <p>No. Zapwebp executes entirely inside your browser's local memory using Web Workers and WebAssembly. Your images never leave your machine.</p>
+            </details>
+            <details class="seo-faq-item">
+              <summary>Why does my converted image look sharper or smaller?</summary>
+              <p>Modern WebP and AVIF formats utilize advanced intra-frame predictive encoding and Lanczos3 resampling, achieving up to 85% smaller file sizes than legacy JPEG or PNG while retaining visual fidelity.</p>
+            </details>
+            <details class="seo-faq-item">
+              <summary>How does Zapwebp protect image transparency?</summary>
+              <p>Zapwebp checks the alpha channel of every source image. When converting to alpha-capable targets (WebP, AVIF, PNG), transparency is preserved byte-for-byte. If you target JPEG (which has no alpha support), Zapwebp prompts you for an explicit background color rather than corrupting transparent areas to black.</p>
+            </details>
+            <details class="seo-faq-item">
+              <summary>What formats can Zapwebp convert?</summary>
+              <p>Zapwebp supports SVG, PNG, WebP, AVIF, JPEG, GIF, TIFF, and multi-size ICO containers with bi-directional conversion.</p>
+            </details>
           </div>
         </div>
+      </section>
+    </main>
 
-        <!-- Documentation & Sitemap Directory -->
-        <nav class="footer-sitemap-grid" aria-label="Documentation Sitemap">
-          <div class="footer-col">
-            <h3 class="footer-col-title" data-i18n="footer.col_ecosystem">
-              Ecosystem &amp; Tools
-            </h3>
-            <ul class="footer-links-list">
-              <li>
-                <a href="/" class="footer-link">
-                  <span
-                    class="footer-link-title"
-                    data-i18n="footer.web_converter"
-                    >Web Converter</span
-                  >
-                  <span class="footer-link-desc"
-                    >In-browser converter, zero uploads</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/plugins/vscode"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.vscode_docs"
-                    >VS Code Extension (Docs)</span
-                  >
-                  <span class="footer-link-desc"
-                    >Right-click &amp; convert-on-save</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://open-vsx.org/extension/ebula/zapwebp-vscode"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.open_vsx"
-                    >VS Code (Open VSX)</span
-                  >
-                  <span class="footer-link-desc"
-                    >Open-source IDE extension registry</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://marketplace.visualstudio.com/items?itemName=ebula.zapwebp-vscode"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span
-                    class="footer-link-title"
-                    data-i18n="footer.vs_marketplace"
-                    >VS Code (VS Marketplace)</span
-                  >
-                  <span class="footer-link-desc"
-                    >Official Visual Studio Marketplace</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/cli"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.cli"
-                    >CLI Tool (`zapwebp`)</span
-                  >
-                  <span class="footer-link-desc"
-                    >Batch terminal engine &amp; undo journals</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/mcp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.mcp"
-                    >MCP Server (AI Agents)</span
-                  >
-                  <span class="footer-link-desc"
-                    >Stdio &amp; SSE protocol for Claude &amp; Cursor</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/api"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.api"
-                    >REST API &amp; Edge Runtime</span
-                  >
-                  <span class="footer-link-desc"
-                    >Headless microservice &amp; edge worker</span
-                  >
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div class="footer-col">
-            <h3 class="footer-col-title" data-i18n="footer.col_guides">
-              Guides &amp; Formats
-            </h3>
-            <ul class="footer-links-list">
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/docs"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span
-                    class="footer-link-title"
-                    data-i18n="footer.getting_started"
-                    >Getting Started</span
-                  >
-                  <span class="footer-link-desc"
-                    >5-minute quickstart tutorial</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/formats"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.formats"
-                    >Supported Formats Matrix</span
-                  >
-                  <span class="footer-link-desc"
-                    >SVG, PNG, WebP, AVIF, JPEG, GIF, TIFF</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/safety"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span
-                    class="footer-link-title"
-                    data-i18n="footer.transparency"
-                    >Transparency &amp; Alpha Rules</span
-                  >
-                  <span class="footer-link-desc"
-                    >Guaranteed alpha retention architecture</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/clean"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.clean_mode"
-                    >Clean Mode &amp; EXIF Stripping</span
-                  >
-                  <span class="footer-link-desc"
-                    >Zero AI provenance, GPS &amp; metadata removal</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/cli"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.multipliers"
-                    >Multi-Scale Retina (@1x/@2x/@3x)</span
-                  >
-                  <span class="footer-link-desc"
-                    >Responsive picture markup &amp; asset sets</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/faq"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.faq"
-                    >Common FAQs</span
-                  >
-                  <span class="footer-link-desc"
-                    >Troubleshooting, package scopes &amp; security</span
-                  >
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div class="footer-col">
-            <h3 class="footer-col-title" data-i18n="footer.col_sdks">
-              Developer SDKs
-            </h3>
-            <ul class="footer-links-list">
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/sdk/core"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.sdk"
-                    >JavaScript/TypeScript SDK</span
-                  >
-                  <span class="footer-link-desc"
-                    >Node.js, browser &amp; edge client</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/plugins/vite"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.vite"
-                    >Vite Plugin</span
-                  >
-                  <span class="footer-link-desc"
-                    >Build-time image compression</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/plugins/next"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.next"
-                    >Next.js Plugin</span
-                  >
-                  <span class="footer-link-desc"
-                    >Static asset &amp; public folder pipeline</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/plugins/storage"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.storage"
-                    >Cloud Storage Adapters</span
-                  >
-                  <span class="footer-link-desc"
-                    >Supabase, Firebase &amp; Neocities hooks</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/plugins/github-action"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span
-                    class="footer-link-title"
-                    data-i18n="footer.github_action"
-                    >GitHub Actions CI/CD</span
-                  >
-                  <span class="footer-link-desc"
-                    >Automated PR image optimization workflow</span
-                  >
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div class="footer-col">
-            <h3 class="footer-col-title" data-i18n="footer.col_platform">
-              Open Platform
-            </h3>
-            <ul class="footer-links-list">
-              <li>
-                <a
-                  href="https://zapwebp-docs.vercel.app/security"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.security"
-                    >Zero-Trust Security Model</span
-                  >
-                  <span class="footer-link-desc"
-                    >SSRF defense &amp; memory safety</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/llms.txt"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.llms"
-                    >Machine-Readable Spec (llms.txt)</span
-                  >
-                  <span class="footer-link-desc"
-                    >LLM index for agent discovery</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/openapi.json"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.openapi"
-                    >OpenAPI Specification</span
-                  >
-                  <span class="footer-link-desc"
-                    >Standard OpenAPI 3.1 REST schema</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/Zapwebp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.github"
-                    >GitHub Organization</span
-                  >
-                  <span class="footer-link-desc"
-                    >Source code repositories &amp; issues</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/Zapwebp/zapwebp/blob/main/LICENSE"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-link"
-                >
-                  <span class="footer-link-title" data-i18n="footer.license"
-                    >MIT License</span
-                  >
-                  <span class="footer-link-desc"
-                    >Permissive open-source license</span
-                  >
-                </a>
-              </li>
-            </ul>
-          </div>
-        </nav>
-
-        <!-- Footer Bottom Bar -->
-        <div class="footer-bottom-bar">
-          <div class="footer-bottom-left">
-            <span data-i18n="footer.copyright"
-              >© 2026 Zapwebp. Maintained by
-              <strong>Eldrex Delos Reyes Bula</strong>. Republic of the
-              Philippines.</span
-            >
-          </div>
-          <div class="footer-bottom-right">
-            <button
-              type="button"
-              class="footer-lang-btn"
-              id="footer-lang-btn"
-              aria-label="Toggle language"
-              title="Switch language (EN / TL)"
-            >
-              <span class="lang-icon">🌐</span>
-              <span class="lang-text" id="footer-lang-label">EN</span>
-            </button>
-            <a
-              href="https://zapwebp-docs.vercel.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="footer-portal-link"
-              data-i18n="footer.full_docs"
-            >
-              Full Docs Portal ↗
-            </a>
-          </div>
-        </div>
+    <!-- Clean One-Line Minimal Footer (v2.1 Masterplan) -->
+    <footer class="site-footer-minimal" role="contentinfo">
+      <div class="footer-minimal-inner">
+        <span class="footer-brand-tag">⚡ Zapwebp · &copy; 2026 · <a href="https://github.com/Zapwebp/zapwebp/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT</a></span>
+        <span class="footer-sep">·</span>
+        <a href="https://zapwebp-docs.vercel.app/privacy" target="_blank" rel="noopener noreferrer">Privacy</a>
+        <span class="footer-sep">·</span>
+        <a href="https://zapwebp-docs.vercel.app/terms" target="_blank" rel="noopener noreferrer">Terms</a>
+        <span class="footer-sep">·</span>
+        <a href="https://zapwebp-docs.vercel.app" target="_blank" rel="noopener noreferrer">Docs</a>
+        <span class="footer-sep">·</span>
+        <a href="https://github.com/Zapwebp" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <button type="button" id="footer-lang-btn" class="footer-lang-hidden" hidden aria-hidden="true"></button>
       </div>
     </footer>
 
@@ -1739,7 +1306,7 @@
             <h2 class="settings-slideover-title" id="settings-slideover-title">
               Settings
             </h2>
-            <span class="settings-badge">Configuration</span>
+            <span class="settings-badge">v2.1</span>
           </div>
           <button
             type="button"
@@ -1751,45 +1318,19 @@
           </button>
         </div>
 
-        <!-- Tab Buttons -->
-        <div
-          class="settings-tabs-header"
-          role="tablist"
-          aria-label="Settings categories"
-        >
-          <button
-            type="button"
-            class="settings-tab-btn is-active"
-            id="tab-btn-essentials"
-            role="tab"
-            aria-selected="true"
-            aria-controls="tab-pane-essentials"
-          >
-            Essentials
-          </button>
-          <button
-            type="button"
-            class="settings-tab-btn"
-            id="tab-btn-advanced"
-            role="tab"
-            aria-selected="false"
-            aria-controls="tab-pane-advanced"
-          >
-            Advanced
-          </button>
+        <!-- Hidden tab buttons for compatibility with existing app.js selectors -->
+        <div class="settings-tabs-header" style="display: none;" aria-hidden="true">
+          <button type="button" id="tab-btn-essentials" class="is-active">Essentials</button>
+          <button type="button" id="tab-btn-advanced">Advanced</button>
         </div>
 
         <div class="settings-slideover-body">
-          <!-- Tab 1: Essentials -->
-          <div
-            class="settings-tab-pane is-active"
-            id="tab-pane-essentials"
-            role="tabpanel"
-            aria-labelledby="tab-btn-essentials"
-          >
-            <!-- Output Format -->
+          <!-- Section 1: Output -->
+          <div class="setting-drawer-section">
+            <h3 class="setting-section-title">Output</h3>
+            
             <div class="setting-group">
-              <span class="setting-group-label">Output Format</span>
+              <span class="setting-group-label">Format</span>
               <div
                 class="setting-radios-row"
                 id="setting-format-radios"
@@ -1797,48 +1338,28 @@
                 aria-label="Output format"
               >
                 <label class="setting-radio-item">
-                  <input
-                    type="radio"
-                    name="setting-default-format"
-                    value="webp"
-                    checked
-                  />
+                  <input type="radio" name="setting-default-format" value="webp" checked />
                   <span class="setting-radio-chip">WebP</span>
                 </label>
                 <label class="setting-radio-item">
-                  <input
-                    type="radio"
-                    name="setting-default-format"
-                    value="avif"
-                  />
+                  <input type="radio" name="setting-default-format" value="avif" />
                   <span class="setting-radio-chip">AVIF</span>
                 </label>
                 <label class="setting-radio-item">
-                  <input
-                    type="radio"
-                    name="setting-default-format"
-                    value="png"
-                  />
+                  <input type="radio" name="setting-default-format" value="png" />
                   <span class="setting-radio-chip">PNG</span>
                 </label>
                 <label class="setting-radio-item">
-                  <input
-                    type="radio"
-                    name="setting-default-format"
-                    value="jpeg"
-                  />
+                  <input type="radio" name="setting-default-format" value="jpeg" />
                   <span class="setting-radio-chip">JPEG</span>
                 </label>
               </div>
             </div>
 
-            <!-- Quality Slider -->
             <div class="setting-group" id="setting-quality-group">
               <div class="setting-slider-header">
                 <span class="setting-group-label">Quality</span>
-                <span class="setting-quality-val" id="setting-quality-val"
-                  >85%</span
-                >
+                <span class="setting-quality-val" id="setting-quality-val">85%</span>
               </div>
               <input
                 type="range"
@@ -1851,39 +1372,36 @@
               />
             </div>
 
-            <!-- Output Size Limit -->
+            <div class="setting-group setting-row-toggle">
+              <div class="setting-meta-text">
+                <span class="setting-group-label">Clean Metadata</span>
+                <p class="setting-hint">Strips EXIF, GPS, and C2PA provenance</p>
+              </div>
+              <label class="setting-switch" title="Toggle Clean Mode metadata stripping">
+                <input type="checkbox" id="setting-clean-toggle" checked />
+                <span class="setting-switch-pill" aria-hidden="true">
+                  <span class="setting-switch-thumb"></span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Section 2: Size Limit -->
+          <div class="setting-drawer-section">
+            <h3 class="setting-section-title">Size</h3>
             <div class="setting-group">
-              <span class="setting-group-label">Output Size Limit</span>
-              <p class="setting-hint">
-                Control maximum file size without sacrificing transparency
-              </p>
-              <div
-                class="setting-size-options"
-                role="radiogroup"
-                aria-label="Output size limit mode"
-              >
+              <div class="setting-size-options" role="radiogroup" aria-label="Output size limit mode">
                 <label class="setting-radio-card">
-                  <input
-                    type="radio"
-                    name="setting-output-size-mode"
-                    value="auto"
-                    checked
-                  />
+                  <input type="radio" name="setting-output-size-mode" value="auto" checked />
                   <div class="setting-radio-card-body">
-                    <span class="setting-card-title">Auto (Recommended)</span>
-                    <span class="setting-card-sub"
-                      >Optimal quality balance with no artificial size cap</span
-                    >
+                    <span class="setting-card-title">Any size (Optimal quality)</span>
+                    <span class="setting-card-sub">No artificial byte cap</span>
                   </div>
                 </label>
                 <label class="setting-radio-card">
-                  <input
-                    type="radio"
-                    name="setting-output-size-mode"
-                    value="custom"
-                  />
+                  <input type="radio" name="setting-output-size-mode" value="custom" />
                   <div class="setting-radio-card-body">
-                    <span class="setting-card-title">Custom Limit</span>
+                    <span class="setting-card-title">Target Limit</span>
                     <div class="setting-input-inline">
                       <input
                         type="number"
@@ -1901,332 +1419,206 @@
                 </label>
               </div>
             </div>
+          </div>
 
-            <!-- Theme -->
-            <div class="setting-group">
-              <span class="setting-group-label">Theme</span>
-              <div
-                class="setting-radios-row"
-                id="setting-theme-radios"
-                role="radiogroup"
-                aria-label="Interface theme"
-              >
-                <label class="setting-radio-item">
+          <!-- Section 3: Collapsible Advanced -->
+          <details class="setting-accordion" id="setting-advanced-accordion">
+            <summary class="setting-accordion-summary">
+              <span>Advanced</span>
+              <span class="accordion-arrow">▾</span>
+            </summary>
+            <div class="setting-accordion-content">
+              <!-- Scale Multipliers -->
+              <div class="setting-group">
+                <span class="setting-group-label">Multi-Scale Retina</span>
+                <p class="setting-hint">Generate responsive @1x, @2x, @3x resolutions</p>
+                <div class="scale-toggles" id="scale-toggles" role="group" aria-label="Scale multipliers">
+                  <button type="button" class="scale-btn is-active" data-scale="1" aria-pressed="true">1x</button>
+                  <button type="button" class="scale-btn" data-scale="2" aria-pressed="false">2x</button>
+                  <button type="button" class="scale-btn" data-scale="3" aria-pressed="false">3x</button>
+                </div>
+              </div>
+
+              <!-- JPEG Background Color -->
+              <div class="setting-group" id="bar-bg-item">
+                <span class="setting-group-label">Background Color (JPEG)</span>
+                <p class="setting-hint">Used when flattening transparent graphics to opaque JPEG</p>
+                <div class="bg-picker-wrap">
                   <input
-                    type="radio"
-                    name="setting-theme"
-                    value="auto"
-                    checked
+                    type="color"
+                    id="bg-color-picker"
+                    class="bg-color-input"
+                    value="#ffffff"
+                    title="Flatten background color for JPEG"
+                    aria-label="Flatten background color"
                   />
-                  <span class="setting-radio-chip">Auto</span>
-                </label>
-                <label class="setting-radio-item">
-                  <input type="radio" name="setting-theme" value="light" />
-                  <span class="setting-radio-chip">Light</span>
-                </label>
-                <label class="setting-radio-item">
-                  <input type="radio" name="setting-theme" value="dark" />
-                  <span class="setting-radio-chip">Dark</span>
-                </label>
+                  <span class="bg-hex-label" id="bg-hex-label">#FFFFFF</span>
+                </div>
               </div>
-            </div>
 
-            <!-- Clean Metadata Toggle -->
-            <div class="setting-group setting-row-toggle">
-              <div class="setting-meta-text">
-                <span class="setting-group-label" data-i18n="settings.clean_metadata">Clean Metadata</span>
-                <p class="setting-hint" data-i18n="settings.clean_metadata_hint">
-                  Strips EXIF, GPS, and C2PA provenance
-                </p>
+              <!-- Lossless Mode Toggle -->
+              <div class="setting-group setting-row-toggle">
+                <div class="setting-meta-text">
+                  <span class="setting-group-label">Lossless Mode</span>
+                  <p class="setting-hint">100% pixel identity verification (0 dB error)</p>
+                </div>
+                <label class="setting-switch lossless-toggle-card" id="lossless-toggle-card" title="Toggle Lossless Mode">
+                  <input type="checkbox" id="lossless-toggle" />
+                  <span class="setting-switch-pill" aria-hidden="true">
+                    <span class="setting-switch-thumb"></span>
+                  </span>
+                </label>
+                <!-- Hidden clone for setting-lossless-toggle selector -->
+                <input type="checkbox" id="setting-lossless-toggle" style="display:none;" />
               </div>
-              <label
-                class="setting-switch"
-                title="Toggle Clean Mode metadata stripping"
-              >
-                <input type="checkbox" id="setting-clean-toggle" checked />
-                <span class="setting-switch-pill" aria-hidden="true">
-                  <span class="setting-switch-thumb"></span>
-                </span>
+
+              <!-- Same-Format Ingestion Strategy -->
+              <div class="setting-group" id="setting-same-format-group">
+                <span class="setting-group-label">Target Lock (Same-Format)</span>
+                <p class="setting-hint">Behavior when source format already matches target</p>
+                <div class="setting-size-options" role="radiogroup">
+                  <label class="setting-radio-card">
+                    <input type="radio" name="setting-same-format" value="passthrough" id="setting-same-fmt-passthrough" checked />
+                    <div class="setting-radio-card-body">
+                      <span class="setting-card-title">Pass-through (Instant)</span>
+                      <span class="setting-card-sub">Zero generational re-compression loss</span>
+                    </div>
+                  </label>
+                  <label class="setting-radio-card">
+                    <input type="radio" name="setting-same-format" value="reencode" id="setting-same-fmt-reencode" />
+                    <div class="setting-radio-card-body">
+                      <span class="setting-card-title">Re-encode</span>
+                      <span class="setting-card-sub">Decode and compress with new quality</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Size Contract Mode -->
+              <div class="setting-group" id="setting-size-mode-group">
+                <span class="setting-group-label">Byte Limit Contract</span>
+                <div class="setting-size-options" role="radiogroup">
+                  <label class="setting-radio-card">
+                    <input type="radio" name="setting-size-mode" value="compress" id="setting-size-mode-compress" checked />
+                    <div class="setting-radio-card-body">
+                      <span class="setting-card-title">Compress (Binary Search)</span>
+                      <span class="setting-card-sub">Optimizes quality in &le; 5 iterations</span>
+                    </div>
+                  </label>
+                  <label class="setting-radio-card">
+                    <input type="radio" name="setting-size-mode" value="strict" id="setting-size-mode-strict" />
+                    <div class="setting-radio-card-body">
+                      <span class="setting-card-title">Strict (Fail Fast)</span>
+                      <span class="setting-card-sub">Reject if target byte limit is exceeded</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Original Files Retention -->
+              <div class="setting-group" id="setting-lifecycle-group">
+                <span class="setting-group-label">Original Files Retention</span>
+                <div class="setting-size-options" role="radiogroup">
+                  <label class="setting-radio-card">
+                    <input type="radio" name="setting-keep-original" value="keep" id="setting-keep-orig-keep" checked />
+                    <div class="setting-radio-card-body">
+                      <span class="setting-card-title">Keep in Memory</span>
+                      <span class="setting-card-sub">Permits re-conversion with other formats</span>
+                    </div>
+                  </label>
+                  <label class="setting-radio-card">
+                    <input type="radio" name="setting-keep-original" value="delete" id="setting-keep-orig-delete" />
+                    <div class="setting-radio-card-body">
+                      <span class="setting-card-title">Free Memory Immediately</span>
+                      <span class="setting-card-sub">Drops source blob after successful conversion</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- After Download Retention -->
+              <div class="setting-group" id="setting-download-lifecycle-group">
+                <span class="setting-group-label">After Download</span>
+                <div class="setting-size-options" role="radiogroup">
+                  <label class="setting-radio-card">
+                    <input type="radio" name="setting-delete-on-download" value="keep" id="setting-del-download-keep" checked />
+                    <div class="setting-radio-card-body">
+                      <span class="setting-card-title">Keep in Browser</span>
+                      <span class="setting-card-sub">Retains files until manually deleted</span>
+                    </div>
+                  </label>
+                  <label class="setting-radio-card">
+                    <input type="radio" name="setting-delete-on-download" value="delete" id="setting-del-download-remove" />
+                    <div class="setting-radio-card-body">
+                      <span class="setting-card-title">Auto-Remove on Download</span>
+                      <span class="setting-card-sub">Automatically frees memory once downloaded</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <input type="number" id="setting-min-output-input" value="0" style="display: none;" />
+              <input type="number" id="setting-input-limit-input" value="50" style="display: none;" />
+            </div>
+          </details>
+
+          <!-- Section 4: Theme -->
+          <div class="setting-drawer-section">
+            <h3 class="setting-section-title">Theme</h3>
+            <div class="setting-radios-row" id="setting-theme-radios" role="radiogroup" aria-label="Interface theme">
+              <label class="setting-radio-item">
+                <input type="radio" name="setting-theme" value="auto" checked />
+                <span class="setting-radio-chip">Auto</span>
               </label>
-            </div>
-
-            <!-- Original Files Lifecycle -->
-            <div class="setting-group" id="setting-lifecycle-group">
-              <span class="setting-group-label" data-i18n="settings.original_files">Original Files</span>
-              <p class="setting-hint" data-i18n="settings.original_files_hint">
-                Control source image storage after conversion
-              </p>
-              <div
-                class="setting-size-options"
-                role="radiogroup"
-                aria-label="Original files conversion lifecycle"
-              >
-                <label class="setting-radio-card">
-                  <input
-                    type="radio"
-                    name="setting-keep-original"
-                    value="keep"
-                    id="setting-keep-orig-keep"
-                    checked
-                  />
-                  <div class="setting-radio-card-body">
-                    <span class="setting-card-title" data-i18n="settings.keep_orig_title">Keep originals (recommended)</span>
-                    <span class="setting-card-sub" data-i18n="settings.keep_orig_desc"
-                      >Keep source file blobs in browser memory &amp; IndexedDB</span
-                    >
-                  </div>
-                </label>
-                <label class="setting-radio-card">
-                  <input
-                    type="radio"
-                    name="setting-keep-original"
-                    value="delete"
-                    id="setting-keep-orig-delete"
-                  />
-                  <div class="setting-radio-card-body">
-                    <span class="setting-card-title" data-i18n="settings.delete_orig_title">Delete after conversion</span>
-                    <span class="setting-card-sub" data-i18n="settings.delete_orig_desc"
-                      >Drop source blob; keep only converted output in storage</span
-                    >
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <!-- After Download Lifecycle -->
-            <div class="setting-group" id="setting-download-lifecycle-group">
-              <span class="setting-group-label" data-i18n="settings.after_download">After download</span>
-              <p class="setting-hint" data-i18n="settings.after_download_hint">
-                Retention of files in browser storage after download
-              </p>
-              <div
-                class="setting-size-options"
-                role="radiogroup"
-                aria-label="After download retention"
-              >
-                <label class="setting-radio-card">
-                  <input
-                    type="radio"
-                    name="setting-delete-on-download"
-                    value="keep"
-                    id="setting-del-download-keep"
-                    checked
-                  />
-                  <div class="setting-radio-card-body">
-                    <span class="setting-card-title" data-i18n="settings.keep_browser_title">Keep in browser</span>
-                    <span class="setting-card-sub" data-i18n="settings.keep_browser_desc"
-                      >Files stay in browser storage until manually cleared</span
-                    >
-                  </div>
-                </label>
-                <label class="setting-radio-card">
-                  <input
-                    type="radio"
-                    name="setting-delete-on-download"
-                    value="delete"
-                    id="setting-del-download-remove"
-                  />
-                  <div class="setting-radio-card-body">
-                    <span class="setting-card-title" data-i18n="settings.remove_browser_title">Remove from browser</span>
-                    <span class="setting-card-sub" data-i18n="settings.remove_browser_desc"
-                      >Automatically clear downloaded items from IndexedDB</span
-                    >
-                  </div>
-                </label>
-              </div>
+              <label class="setting-radio-item">
+                <input type="radio" name="setting-theme" value="light" />
+                <span class="setting-radio-chip">Light</span>
+              </label>
+              <label class="setting-radio-item">
+                <input type="radio" name="setting-theme" value="dark" />
+                <span class="setting-radio-chip">Dark</span>
+              </label>
             </div>
           </div>
 
-          <!-- Tab 2: Advanced -->
-          <div
-            class="settings-tab-pane"
-            id="tab-pane-advanced"
-            role="tabpanel"
-            aria-labelledby="tab-btn-advanced"
-            hidden
-          >
-            <!-- Same-Format Ingestion Strategy -->
-            <div class="setting-group" id="setting-same-format-group">
-              <span class="setting-group-label" data-i18n="settings.same_format">Same-Format Ingestion</span>
-              <p class="setting-hint" data-i18n="settings.same_format_hint">
-                Action when input image already matches the requested target format
-              </p>
-              <div
-                class="setting-size-options"
-                role="radiogroup"
-                aria-label="Same-format ingestion action"
-              >
-                <label class="setting-radio-card">
-                  <input
-                    type="radio"
-                    name="setting-same-format"
-                    value="passthrough"
-                    id="setting-same-fmt-passthrough"
-                    checked
-                  />
-                  <div class="setting-radio-card-body">
-                    <span class="setting-card-title" data-i18n="settings.same_fmt_pass_title">Pass-through (Instant)</span>
-                    <span class="setting-card-sub" data-i18n="settings.same_fmt_pass_desc"
-                      >Zero decode/re-encode overhead, 0% generational quality loss</span
-                    >
-                  </div>
-                </label>
-                <label class="setting-radio-card">
-                  <input
-                    type="radio"
-                    name="setting-same-format"
-                    value="reencode"
-                    id="setting-same-fmt-reencode"
-                  />
-                  <div class="setting-radio-card-body">
-                    <span class="setting-card-title" data-i18n="settings.same_fmt_reencode_title">Re-encode</span>
-                    <span class="setting-card-sub" data-i18n="settings.same_fmt_reencode_desc"
-                      >Decode and re-compress with the current quality settings</span
-                    >
-                  </div>
-                </label>
-                <label class="setting-radio-card">
-                  <input
-                    type="radio"
-                    name="setting-same-format"
-                    value="reject"
-                    id="setting-same-fmt-reject"
-                  />
-                  <div class="setting-radio-card-body">
-                    <span class="setting-card-title" data-i18n="settings.same_fmt_reject_title">Reject</span>
-                    <span class="setting-card-sub" data-i18n="settings.same_fmt_reject_desc"
-                      >Block uploads already in the target format (E_SAME_FORMAT_REJECTED)</span
-                    >
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <!-- Size Contract Mode -->
-            <div class="setting-group" id="setting-size-mode-group">
-              <span class="setting-group-label" data-i18n="settings.size_mode">Size Contract Mode</span>
-              <p class="setting-hint" data-i18n="settings.size_mode_hint">
-                Enforcement policy when output byte limits are configured
-              </p>
-              <div
-                class="setting-size-options"
-                role="radiogroup"
-                aria-label="Size contract mode"
-              >
-                <label class="setting-radio-card">
-                  <input
-                    type="radio"
-                    name="setting-size-mode"
-                    value="compress"
-                    id="setting-size-mode-compress"
-                    checked
-                  />
-                  <div class="setting-radio-card-body">
-                    <span class="setting-card-title" data-i18n="settings.size_mode_compress_title">Compress (Binary Search)</span>
-                    <span class="setting-card-sub" data-i18n="settings.size_mode_compress_desc"
-                      >Smart binary search finds optimal quality in &le; 5 steps to fit under limit</span
-                    >
-                  </div>
-                </label>
-                <label class="setting-radio-card">
-                  <input
-                    type="radio"
-                    name="setting-size-mode"
-                    value="strict"
-                    id="setting-size-mode-strict"
-                  />
-                  <div class="setting-radio-card-body">
-                    <span class="setting-card-title" data-i18n="settings.size_mode_strict_title">Strict (Fail Fast)</span>
-                    <span class="setting-card-sub" data-i18n="settings.size_mode_strict_desc"
-                      >Strictly reject conversion if output exceeds byte limit without degrading quality</span
-                    >
-                  </div>
-                </label>
-                <label class="setting-radio-card">
-                  <input
-                    type="radio"
-                    name="setting-size-mode"
-                    value="flexible"
-                    id="setting-size-mode-flexible"
-                  />
-                  <div class="setting-radio-card-body">
-                    <span class="setting-card-title" data-i18n="settings.size_mode_flexible_title">Flexible (Warn Only)</span>
-                    <span class="setting-card-sub" data-i18n="settings.size_mode_flexible_desc"
-                      >Preserves full quality and emits a non-blocking size warning banner</span
-                    >
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <!-- Minimum Output Bounds -->
-            <div class="setting-group">
-              <span class="setting-group-label" data-i18n="settings.min_output">Minimum Output Bound</span>
-              <p class="setting-hint" data-i18n="settings.min_output_hint">
-                Validate that output files meet a minimum threshold (detects blank / placeholder assets)
-              </p>
-              <div class="setting-input-inline">
-                <span class="setting-input-pre">Minimum output</span>
-                <input
-                  type="number"
-                  id="setting-min-output-input"
-                  class="setting-num-input"
-                  min="0"
-                  max="10000"
-                  value="0"
-                  aria-label="Minimum output file size in kilobytes"
-                />
-                <span class="setting-unit-label">KB (0 = off)</span>
-              </div>
-            </div>
-
-            <!-- Input Size Restriction -->
-            <div class="setting-group">
-              <span class="setting-group-label">Input Size Restriction</span>
-              <p class="setting-hint">
-                Reject source files exceeding memory bounds before processing
-              </p>
-              <div class="setting-input-inline">
-                <span class="setting-input-pre">Reject files larger than</span>
-                <input
-                  type="number"
-                  id="setting-input-limit-input"
-                  class="setting-num-input"
-                  min="1"
-                  max="200"
-                  value="50"
-                  aria-label="Maximum input file size in megabytes"
-                />
-                <span class="setting-unit-label">MB</span>
-              </div>
-            </div>
-
-            <!-- Lossless Mode Toggle with Warning Note -->
-            <div class="setting-group setting-row-toggle">
-              <div class="setting-meta-text">
-                <span class="setting-group-label">Lossless Mode</span>
-                <p class="setting-hint">100% pixel fidelity (1.0 quality)</p>
-                <p
-                  class="setting-subnote-warning"
-                  id="setting-lossless-warning"
-                >
-                  ⚠️ Lossless overrides Output Limit
-                </p>
-              </div>
-              <label class="setting-switch" title="Toggle Lossless Mode">
-                <input type="checkbox" id="setting-lossless-toggle" />
-                <span class="setting-switch-pill" aria-hidden="true">
-                  <span class="setting-switch-thumb"></span>
-                </span>
+          <!-- Section 5: Language -->
+          <div class="setting-drawer-section">
+            <h3 class="setting-section-title">Language</h3>
+            <div class="setting-radios-row" id="drawer-lang-options-group" role="radiogroup" aria-label="Interface language">
+              <label class="setting-radio-item">
+                <input type="radio" name="drawer-lang" value="en" checked />
+                <span class="setting-radio-chip">English (EN)</span>
+              </label>
+              <label class="setting-radio-item">
+                <input type="radio" name="drawer-lang" value="tl" />
+                <span class="setting-radio-chip">Tagalog (TL)</span>
               </label>
             </div>
+          </div>
+
+          <!-- Section 6: Quick Links -->
+          <div class="setting-drawer-section">
+            <h3 class="setting-section-title">Quick Links</h3>
+            <div class="drawer-quick-links">
+              <a href="https://zapwebp-docs.vercel.app" target="_blank" rel="noopener noreferrer" class="drawer-link">Docs ↗</a>
+              <a href="https://zapwebp-docs.vercel.app/cli" target="_blank" rel="noopener noreferrer" class="drawer-link">CLI ↗</a>
+              <a href="https://zapwebp-docs.vercel.app/mcp" target="_blank" rel="noopener noreferrer" class="drawer-link">MCP Agent ↗</a>
+              <a href="https://github.com/Zapwebp" target="_blank" rel="noopener noreferrer" class="drawer-link">GitHub ↗</a>
+            </div>
+          </div>
+
+          <!-- Section 7: Reset to defaults -->
+          <div class="setting-drawer-footer">
+            <button type="button" class="btn-reset-defaults" id="btn-reset-defaults">
+              Reset to defaults
+            </button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Confirm Delete All Modal -->
-    <div class="confirm-modal-backdrop" id="confirm-delete-modal" hidden>
+    <zap-modal class="confirm-modal-backdrop" id="confirm-delete-modal" hidden>
       <div
         class="confirm-modal-panel"
         role="alertdialog"
@@ -2260,10 +1652,10 @@
           </button>
         </div>
       </div>
-    </div>
+    </zap-modal>
 
     <!-- Confirm Delete Original Modal -->
-    <div class="confirm-modal-backdrop" id="confirm-delete-original-modal" hidden>
+    <zap-modal class="confirm-modal-backdrop" id="confirm-delete-original-modal" hidden>
       <div
         class="confirm-modal-panel"
         role="alertdialog"
@@ -2296,7 +1688,83 @@
           </button>
         </div>
       </div>
-    </div>
+    </zap-modal>
+
+    <!-- Performance & Carbon Reports Modal -->
+    <zap-modal class="confirm-modal-backdrop" id="reports-modal" hidden>
+      <div
+        class="confirm-modal-panel reports-modal-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reports-modal-title"
+      >
+        <div class="reports-header">
+          <div class="reports-header-text">
+            <h3 class="confirm-modal-title" id="reports-modal-title">📊 Performance &amp; Carbon Report</h3>
+            <p class="confirm-modal-desc">Cumulative bandwidth saved and environmental impact from your browser conversions.</p>
+          </div>
+          <button type="button" class="reports-close-btn" id="reports-close-btn" aria-label="Close Report">✕</button>
+        </div>
+
+        <!-- Period Filter Pills -->
+        <div class="reports-period-pills" role="tablist" aria-label="Report Period">
+          <button type="button" class="period-pill is-active" data-period="all">All Time</button>
+          <button type="button" class="period-pill" data-period="30">Last 30 Days</button>
+          <button type="button" class="period-pill" data-period="7">Last 7 Days</button>
+        </div>
+
+        <!-- Summary Metrics Grid -->
+        <div class="reports-metrics-grid">
+          <div class="report-metric-card">
+            <span class="metric-label">Files Converted</span>
+            <span class="metric-value" id="rep-total-files">0</span>
+          </div>
+          <div class="report-metric-card">
+            <span class="metric-label">Bandwidth Saved</span>
+            <span class="metric-value highlight" id="rep-saved-bytes">0 KB</span>
+            <span class="metric-sub" id="rep-saved-pct">0% reduction</span>
+          </div>
+          <div class="report-metric-card">
+            <span class="metric-label">Data Processed</span>
+            <span class="metric-value" id="rep-data-flow">0 KB → 0 KB</span>
+          </div>
+          <div class="report-metric-card">
+            <span class="metric-label">Carbon Offset</span>
+            <span class="metric-value green" id="rep-carbon">0 Wh</span>
+            <span class="metric-sub" id="rep-carbon-co2">0 g CO₂e avoided</span>
+          </div>
+        </div>
+
+        <!-- Format Breakdown -->
+        <div class="reports-section">
+          <h4 class="reports-section-title">Breakdown by Target Format</h4>
+          <div class="reports-format-list" id="rep-format-list">
+            <div class="reports-empty-msg">No conversions recorded yet.</div>
+          </div>
+        </div>
+
+        <!-- Top Savings -->
+        <div class="reports-section">
+          <h4 class="reports-section-title">Top Space Savings</h4>
+          <div class="reports-top-list" id="rep-top-list">
+            <div class="reports-empty-msg">Convert files to see savings leaderboard.</div>
+          </div>
+        </div>
+
+        <!-- Privacy & Local Execution Notice -->
+        <div class="reports-zero-notice">
+          <span class="zero-badge">🔒 100% In-Memory &amp; Local Storage</span>
+          <span>Zero external telemetry. All metrics calculated directly in your browser.</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="confirm-modal-actions" style="margin-top: 16px;">
+          <button type="button" class="btn-confirm-cancel" id="btn-export-report-json">Export JSON</button>
+          <button type="button" class="btn-confirm-cancel" id="btn-export-report-csv">Export CSV</button>
+          <button type="button" class="btn-confirm-cancel" id="btn-close-reports" style="background:var(--accent);color:var(--bg);border-color:var(--accent);">Close</button>
+        </div>
+      </div>
+    </zap-modal>
 
     <!-- Lifecycle Toast Notification Container -->
     <div class="toast-container" id="toast-container" aria-live="polite"></div>

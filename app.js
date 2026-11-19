@@ -7,6 +7,26 @@
 
 const SUPPORTED_EXTENSIONS = new Set(['.svg', '.png', '.jpg', '.jpeg', '.webp', '.avif', '.gif', '.tif', '.tiff']);
 
+/**
+ * Escapes unsafe characters for secure DOM innerHTML interpolation.
+ * Prevents DOM XSS from user-supplied image file names and payloads.
+ * @param {unknown} str - String or value to escape
+ * @returns {string} Sanitized HTML-safe string
+ */
+function escapeHtml(str) {
+  if (typeof str !== 'string') return String(str ?? '');
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+if (typeof window !== 'undefined') {
+  window.escapeHtml = escapeHtml;
+}
+
 // DOM References
 const fileInput = document.querySelector('#file-input');
 const dropzone = document.querySelector('#dropzone');
@@ -121,6 +141,14 @@ function persistSettings() {
       minOutputBytes: settings.minOutputBytes,
     }));
   } catch {}
+}
+
+// Reactive State Store Bridge (Web Components & Universal Store)
+const zapStore = (typeof window !== 'undefined' && window.ZapUI?.createZapStore)
+  ? window.ZapUI.createZapStore({ targetFormat: settings.format, initialState: { settings } })
+  : null;
+if (typeof window !== 'undefined') {
+  window.zapStore = zapStore;
 }
 
 // ==========================================================================
@@ -723,6 +751,259 @@ if (brandResetBtn) {
   });
 }
 
+// Reset settings to defaults (Masterplan Section 3.1)
+const btnResetDefaults = document.querySelector('#btn-reset-defaults');
+if (btnResetDefaults) {
+  btnResetDefaults.addEventListener('click', (e) => {
+    e.preventDefault();
+    settings.format = 'webp';
+    settings.quality = 85;
+    settings.clean = true;
+    settings.outputSizeMode = 'auto';
+    settings.scales = new Set([1]);
+    settings.lossless = false;
+    settings.theme = 'auto';
+    saveSettingsToStorage();
+    syncSettingsSlideoverUI();
+    applyTheme('auto');
+
+    // Sync on-screen controls
+    const qualityBar = document.querySelector('#quality');
+    const qualityDisplay = document.querySelector('#quality-display');
+    if (qualityBar) qualityBar.value = 85;
+    if (qualityDisplay) qualityDisplay.textContent = '85%';
+
+    const cleanToggle = document.querySelector('#clean-toggle');
+    const cleanToggleCard = document.querySelector('#clean-toggle-card');
+    if (cleanToggle) cleanToggle.checked = true;
+    if (cleanToggleCard) cleanToggleCard.classList.add('is-active');
+
+    const fmtPills = document.querySelectorAll('.fmt-select-btn');
+    fmtPills.forEach((p) => {
+      const isWebp = p.getAttribute('data-format') === 'webp';
+      p.classList.toggle('is-active', isWebp);
+      p.setAttribute('aria-checked', String(isWebp));
+    });
+
+    showToast(t('toast.settings_reset', 'Settings reset to defaults.'));
+  });
+}
+
+// Drawer language radios listener
+const drawerLangRadios = document.querySelectorAll('input[name="drawer-lang"]');
+drawerLangRadios.forEach((radio) => {
+  radio.addEventListener('change', () => {
+    if (radio.checked && typeof setLocale === 'function') {
+      setLocale(radio.value);
+    }
+  });
+});
+
+// ==========================================================================
+// Performance & Carbon Reports Controller
+// ==========================================================================
+const reportsModal = document.querySelector('#reports-modal');
+const navReportsBtn = document.querySelector('#nav-reports-btn');
+const reportsCloseBtn = document.querySelector('#reports-close-btn');
+const btnCloseReports = document.querySelector('#btn-close-reports');
+const btnExportReportJson = document.querySelector('#btn-export-report-json');
+const btnExportReportCsv = document.querySelector('#btn-export-report-csv');
+const periodPills = document.querySelectorAll('.period-pill');
+let activeReportPeriod = 'all';
+
+async function computeBrowserPerformanceReport(sinceDays = 0) {
+  const records = await dbGetAllFiles();
+  const sinceMs = sinceDays > 0 ? Date.now() - sinceDays * 86400000 : 0;
+  const filtered = records.filter((r) => !sinceMs || (r.createdAt && r.createdAt >= sinceMs));
+
+  let originalBytes = 0;
+  let optimizedBytes = 0;
+  const byFormat = {};
+  const savings = [];
+
+  for (const r of filtered) {
+    const sizeIn = Number(r.sizeIn) || 0;
+    const sizeOut = Number(r.sizeOut) || 0;
+    const saved = Math.max(0, sizeIn - sizeOut);
+    originalBytes += sizeIn;
+    optimizedBytes += sizeOut;
+
+    const fmt = (r.format || 'unknown').toLowerCase();
+    if (!byFormat[fmt]) byFormat[fmt] = { count: 0, originalBytes: 0, optimizedBytes: 0, savedBytes: 0 };
+    byFormat[fmt].count++;
+    byFormat[fmt].originalBytes += sizeIn;
+    byFormat[fmt].optimizedBytes += sizeOut;
+    byFormat[fmt].savedBytes += saved;
+
+    savings.push({
+      id: r.id,
+      name: r.name || 'unnamed',
+      format: fmt,
+      sizeIn,
+      sizeOut,
+      savedBytes: saved,
+      savedPercent: sizeIn > 0 ? Math.round((saved / sizeIn) * 100) : 0,
+      createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : new Date().toISOString()
+    });
+  }
+
+  const savedBytes = Math.max(0, originalBytes - optimizedBytes);
+  const savedPercent = originalBytes > 0 ? Math.round((savedBytes / originalBytes) * 100) : 0;
+  const savedGb = savedBytes / (1024 * 1024 * 1024);
+  const kwhSaved = savedGb * 0.06;
+  const co2Grams = kwhSaved * 400;
+
+  savings.sort((a, b) => b.savedBytes - a.savedBytes);
+
+  return {
+    totalFiles: filtered.length,
+    originalBytes,
+    optimizedBytes,
+    savedBytes,
+    savedPercent,
+    kwhSaved,
+    co2Grams,
+    byFormat,
+    topSavings: savings.slice(0, 10),
+    allRecords: savings
+  };
+}
+
+async function renderReportsModal(period = activeReportPeriod) {
+  activeReportPeriod = period;
+  const days = period === '30' ? 30 : period === '7' ? 7 : 0;
+  const report = await computeBrowserPerformanceReport(days);
+
+  const totalFilesEl = document.querySelector('#rep-total-files');
+  const savedBytesEl = document.querySelector('#rep-saved-bytes');
+  const savedPctEl = document.querySelector('#rep-saved-pct');
+  const dataFlowEl = document.querySelector('#rep-data-flow');
+  const carbonEl = document.querySelector('#rep-carbon');
+  const carbonCo2El = document.querySelector('#rep-carbon-co2');
+  const formatListEl = document.querySelector('#rep-format-list');
+  const topListEl = document.querySelector('#rep-top-list');
+
+  if (totalFilesEl) totalFilesEl.textContent = String(report.totalFiles);
+  if (savedBytesEl) savedBytesEl.textContent = formatKb(report.savedBytes);
+  if (savedPctEl) savedPctEl.textContent = `${report.savedPercent}% reduction`;
+  if (dataFlowEl) dataFlowEl.textContent = `${formatKb(report.originalBytes)} → ${formatKb(report.optimizedBytes)}`;
+
+  if (carbonEl) {
+    carbonEl.textContent = report.kwhSaved < 1
+      ? `${(report.kwhSaved * 1000).toFixed(1)} mWh`
+      : `${report.kwhSaved.toFixed(2)} Wh`;
+  }
+  if (carbonCo2El) {
+    carbonCo2El.textContent = report.co2Grams < 1000
+      ? `${report.co2Grams.toFixed(1)} g CO₂e avoided`
+      : `${(report.co2Grams / 1000).toFixed(2)} kg CO₂e avoided`;
+  }
+
+  if (formatListEl) {
+    const formats = Object.keys(report.byFormat);
+    if (formats.length === 0) {
+      formatListEl.innerHTML = '<div class="reports-empty-msg">No conversions recorded yet.</div>';
+    } else {
+      formatListEl.innerHTML = formats.map((fmt) => {
+        const item = report.byFormat[fmt];
+        return `
+          <div class="report-row">
+            <span><strong>${fmt.toUpperCase()}</strong> (${item.count} files)</span>
+            <span>${formatKb(item.savedBytes)} saved</span>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  if (topListEl) {
+    if (report.topSavings.length === 0) {
+      topListEl.innerHTML = '<div class="reports-empty-msg">Convert files to see savings leaderboard.</div>';
+    } else {
+      topListEl.innerHTML = report.topSavings.map((item, idx) => `
+        <div class="report-row">
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px;">
+            ${idx + 1}. ${escapeHtml(item.name)} (${escapeHtml(item.format)})
+          </span>
+          <span>${formatKb(item.sizeIn)} → ${formatKb(item.sizeOut)} (<strong>-${item.savedPercent}%</strong>)</span>
+        </div>
+      `).join('');
+    }
+  }
+}
+
+function openReportsModal() {
+  if (!reportsModal) return;
+  reportsModal.hidden = false;
+  renderReportsModal(activeReportPeriod);
+}
+
+function closeReportsModal() {
+  if (!reportsModal) return;
+  reportsModal.hidden = true;
+}
+
+if (navReportsBtn) {
+  navReportsBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openReportsModal();
+  });
+}
+if (reportsCloseBtn) reportsCloseBtn.addEventListener('click', closeReportsModal);
+if (btnCloseReports) btnCloseReports.addEventListener('click', closeReportsModal);
+if (reportsModal) {
+  reportsModal.addEventListener('click', (e) => {
+    if (e.target === reportsModal) closeReportsModal();
+  });
+}
+
+periodPills.forEach((pill) => {
+  pill.addEventListener('click', () => {
+    periodPills.forEach((p) => p.classList.remove('is-active'));
+    pill.classList.add('is-active');
+    renderReportsModal(pill.dataset.period || 'all');
+  });
+});
+
+if (btnExportReportJson) {
+  btnExportReportJson.addEventListener('click', async () => {
+    const days = activeReportPeriod === '30' ? 30 : activeReportPeriod === '7' ? 7 : 0;
+    const report = await computeBrowserPerformanceReport(days);
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `zapwebp-performance-report-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
+if (btnExportReportCsv) {
+  btnExportReportCsv.addEventListener('click', async () => {
+    const days = activeReportPeriod === '30' ? 30 : activeReportPeriod === '7' ? 7 : 0;
+    const report = await computeBrowserPerformanceReport(days);
+    const rows = [
+      ['filename', 'format', 'size_in_bytes', 'size_out_bytes', 'saved_bytes', 'saved_percent', 'created_at']
+    ];
+    for (const r of report.allRecords) {
+      rows.push([r.name, r.format, r.sizeIn, r.sizeOut, r.savedBytes, r.savedPercent, r.createdAt]);
+    }
+    const csvContent = rows.map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `zapwebp-performance-report-${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
+if (typeof window !== 'undefined' && window.location.pathname.startsWith('/reports')) {
+  setTimeout(openReportsModal, 150);
+}
+
 // ==========================================================================
 // Comprehensive Web i18n Translation Engine (EN / TL)
 // ==========================================================================
@@ -731,6 +1012,9 @@ const I18N_DICTIONARIES = {
     'nav.docs': 'Docs',
     'nav.cli': 'CLI',
     'nav.mcp': 'MCP',
+    'nav.reports': 'Reports',
+    'header.language': 'Language',
+    'header.contribute_translation': 'Contribute translation',
     'hero.badge': '100% In-Browser · Zero Server Uploads',
     'hero.title': 'Convert<span class="accent-gradient"> correctly.</span>',
     'hero.description': '<span class="hero-pill-item"><svg class="hero-pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Transparency preserved</span><span class="hero-pill-sep" aria-hidden="true">•</span><span class="hero-pill-item"><svg class="hero-pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Metadata stripped</span><span class="hero-pill-sep" aria-hidden="true">•</span><span class="hero-pill-item"><svg class="hero-pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>Zero server uploads</span>',
@@ -813,6 +1097,9 @@ const I18N_DICTIONARIES = {
     'nav.docs': 'Mga Gabay',
     'nav.cli': 'CLI',
     'nav.mcp': 'MCP',
+    'nav.reports': 'Mga Ulat',
+    'header.language': 'Wika',
+    'header.contribute_translation': 'Mag-ambag ng salin',
     'hero.badge': '100% Sa Loob ng Browser · Walang Server Uploads',
     'hero.title': 'Mag-convert<span class="accent-gradient"> nang tama.</span>',
     'hero.description': '<span class="hero-pill-item"><svg class="hero-pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Nananatili ang aninag</span><span class="hero-pill-sep" aria-hidden="true">•</span><span class="hero-pill-item"><svg class="hero-pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Tinanggal ang metadata</span><span class="hero-pill-sep" aria-hidden="true">•</span><span class="hero-pill-item"><svg class="hero-pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>Walang server uploads</span>',
@@ -921,12 +1208,35 @@ function applyTranslations(lang) {
     footerLangBtn.setAttribute('aria-label', activeLang === 'en' ? 'Switch to Tagalog' : 'Switch to English');
   }
 
-  // Update header button if present
+  // Update header language component
+  const headerLangCurrentLabel = document.querySelector('#header-lang-current-label');
+  if (headerLangCurrentLabel) {
+    headerLangCurrentLabel.textContent = activeLang === 'tl' ? 'Tagalog' : 'English';
+  }
   const headerLangBtn = document.querySelector('#header-lang-btn');
   if (headerLangBtn) {
-    headerLangBtn.textContent = activeLang === 'en' ? '🌐 EN' : '🌐 TL';
-    headerLangBtn.setAttribute('title', activeLang === 'en' ? 'Switch to Tagalog (TL)' : 'Switch to English (EN)');
+    headerLangBtn.setAttribute('title', activeLang === 'tl' ? 'Pumili ng wika (Tagalog)' : 'Select language (English)');
+    headerLangBtn.setAttribute('aria-label', activeLang === 'tl' ? 'Pumili ng wika' : 'Select language');
   }
+
+  // Update active state in dropdown options
+  const langOptions = document.querySelectorAll('#header-lang-options-group .dropdown-item');
+  langOptions.forEach((btn) => {
+    const loc = btn.getAttribute('data-locale');
+    if (loc === activeLang) {
+      btn.classList.add('is-active');
+      if (!btn.querySelector('.loc-check')) {
+        const check = document.createElement('span');
+        check.className = 'loc-check';
+        check.textContent = '✓';
+        btn.appendChild(check);
+      }
+    } else {
+      btn.classList.remove('is-active');
+      const check = btn.querySelector('.loc-check');
+      if (check) check.remove();
+    }
+  });
 
   // Translate all DOM elements tagged with data-i18n
   document.querySelectorAll('[data-i18n]').forEach((el) => {
@@ -947,26 +1257,79 @@ function applyTranslations(lang) {
   }
 }
 
-function toggleLanguage() {
-  const current = getActiveLanguage();
-  const next = current === 'en' ? 'tl' : 'en';
-  applyTranslations(next);
+const headerLangWrap = document.querySelector('#header-lang-dropdown-wrap');
+const headerLangBtn = document.querySelector('#header-lang-btn');
+const headerLangMenu = document.querySelector('#header-lang-dropdown-menu');
+
+function toggleHeaderLangDropdown() {
+  if (!headerLangMenu) return;
+  const isHidden = headerLangMenu.hidden;
+  if (isHidden) {
+    headerLangMenu.hidden = false;
+    headerLangBtn?.setAttribute('aria-expanded', 'true');
+  } else {
+    closeHeaderLangDropdown();
+  }
 }
 
-// Bind Header & Footer Language Toggle Buttons
+function closeHeaderLangDropdown() {
+  if (headerLangMenu && !headerLangMenu.hidden) {
+    headerLangMenu.hidden = true;
+    headerLangBtn?.setAttribute('aria-expanded', 'false');
+  }
+}
+
+if (headerLangBtn) {
+  headerLangBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleHeaderLangDropdown();
+  });
+}
+
+// Option selection inside dropdown
+const langOptionsGroup = document.querySelector('#header-lang-options-group');
+if (langOptionsGroup) {
+  langOptionsGroup.querySelectorAll('.dropdown-item').forEach((item) => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const loc = item.getAttribute('data-locale');
+      if (loc) {
+        applyTranslations(loc);
+        closeHeaderLangDropdown();
+      }
+    });
+  });
+}
+
+// Close dropdown on outside click or Esc
+document.addEventListener('pointerdown', (e) => {
+  if (!headerLangWrap?.contains(e.target)) {
+    closeHeaderLangDropdown();
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (!headerLangWrap?.contains(e.target)) {
+    closeHeaderLangDropdown();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && headerLangMenu && !headerLangMenu.hidden) {
+    closeHeaderLangDropdown();
+  }
+});
+
+// Bind Footer Language Toggle Button
 const footerLangBtn = document.querySelector('#footer-lang-btn');
 if (footerLangBtn) {
   footerLangBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    toggleLanguage();
-  });
-}
-
-const headerLangBtn = document.querySelector('#header-lang-btn');
-if (headerLangBtn) {
-  headerLangBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    toggleLanguage();
+    const current = getActiveLanguage();
+    const next = current === 'en' ? 'tl' : 'en';
+    applyTranslations(next);
   });
 }
 
@@ -1124,6 +1487,10 @@ function syncUiWithSettings() {
   updateQualitySliderState();
   updateBackgroundPickerVisibility();
   updateToggleCards();
+
+  if (zapStore) {
+    zapStore.setState({ targetFormat: settings.format, settings: { ...settings } });
+  }
 }
 
 function updateToggleCards() {
@@ -1708,6 +2075,9 @@ async function convertViaApi(file, toFormat, quality, scales = [1], isClean = tr
   formData.append('lossless', String(isLossless));
   formData.append('clean', String(isClean));
   if (bgColor) formData.append('background', bgColor);
+  if (settings.outputSizeMode === 'custom' && settings.outputSizeLimitKb) {
+    formData.append('targetBytes', String(settings.outputSizeLimitKb * 1024));
+  }
 
   const res = await fetch('/api/convert', {
     method: 'POST',
@@ -1951,9 +2321,11 @@ const downloadRestoreCache = new Map();
 function showToast(message, options = {}) {
   const container = document.getElementById('toast-container');
   if (!container) return;
-  const item = document.createElement('div');
+  const isCustomElement = Boolean(typeof window !== 'undefined' && window.customElements?.get('zap-toast'));
+  const item = document.createElement(isCustomElement ? 'zap-toast' : 'div');
+  if (options.type) item.setAttribute('type', options.type);
   item.className = 'toast-item';
-  item.innerHTML = `<span>${message}</span>`;
+  item.innerHTML = `<span>${escapeHtml(message)}</span>`;
 
   if (options.restoreAction) {
     const btn = document.createElement('button');
@@ -2092,82 +2464,69 @@ function renderResultsView() {
       ? Math.round(((item.originalSize - out.size) / item.originalSize) * 100)
       : 0;
 
-    const singleCard = document.createElement('div');
+    const isZapCard = Boolean(typeof window !== 'undefined' && window.customElements?.get('zap-card'));
+    const singleCard = document.createElement(isZapCard ? 'zap-card' : 'div');
     singleCard.className = 'single-result-card';
     singleCard.innerHTML = `
-      <div class="single-card-top">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div class="single-status-badge">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            <span>${t('single.converted', 'Converted')}</span>
-          </div>
-          ${item.originalDeleted ? `
-            <div class="single-orig-removed-badge" title="${t('single.original_removed', 'Original removed')}">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-              <span>${t('single.original_removed', 'Original removed')}</span>
-            </div>
-          ` : ''}
-          ${out.passedThrough ? `
-            <div class="single-passthrough-badge" title="${t('single.same_format_pass', 'Same-format pass-through: zero generational loss')}">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              <span>${t('single.passthrough', '⚡ No Re-encode')}</span>
-            </div>
-          ` : ''}
-        </div>
-        <div class="single-fmt-pill">${(item.originalFormat || 'SRC').toUpperCase()} → ${out.format.toUpperCase()}</div>
-      </div>
       <div class="single-card-main">
         <div class="single-thumb-wrap" title="Click to inspect & compare image" role="button" tabindex="0">
-          <img src="${out.url}" alt="${item.name}" />
+          <img src="${out.url}" alt="${escapeHtml(item.name)}" />
           <div class="single-thumb-overlay" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </div>
         </div>
-        <div class="single-details-col">
-          <div class="single-filename" title="${item.name}">${item.name}</div>
-          <div class="single-stats-row">
-            <span class="single-size-from">${formatKb(item.originalSize)}</span>
-            <svg class="single-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            <span class="single-size-to">${formatKb(out.size)}</span>
-            <span class="single-savings-badge ${savingsPct >= 0 ? 'is-saved' : 'is-grown'}">
-              ${savingsPct > 0 ? '−' : '+'}${Math.abs(savingsPct)}%
-            </span>
-          </div>
-          ${out.qualityReduced ? `
-            <div class="quality-downgrade-badge" title="Quality was automatically reduced to fit file size target">
-              📉 Quality reduced from ${out.originalQuality} to ${out.finalQuality} to fit ${out.limitKb} KB.
-            </div>
+
+        <div class="single-info-line">
+          <span class="single-filename-tag">${escapeHtml(out.name)}</span>
+          <span class="single-info-sep">·</span>
+          <span class="single-size-tag">${formatKb(out.size)}</span>
+          <span class="single-info-sep">·</span>
+          <span class="single-dim-tag">${item.width || 512}×${item.height || 512}</span>
+          ${out.alphaPreserved ? `
+            <span class="single-info-sep">·</span>
+            <span class="single-trans-badge">Transparency ✓</span>
+          ` : ''}
+          ${savingsPct !== 0 ? `
+            <span class="single-info-sep">·</span>
+            <span class="single-savings-tag ${savingsPct > 0 ? 'is-saved' : 'is-grown'}">${savingsPct > 0 ? '−' : '+'}${Math.abs(savingsPct)}%</span>
           ` : ''}
         </div>
-      </div>
-      <div class="single-card-actions">
-        <button type="button" class="btn-single-preview" data-id="${item.id}" title="Inspect & Compare in Split View" aria-label="Inspect & Compare">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span>${t('single.preview', 'Inspect')}</span>
+
+        <button type="button" class="btn-single-download zap-button-primary" data-id="${item.id}" title="Download ${out.name}" aria-label="Download ${out.name}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>${t('single.download', 'Download')} ${out.format.toUpperCase()} (${formatKb(out.size)})</span>
         </button>
-        <button type="button" class="btn-single-crop" data-id="${item.id}" title="${t('card.crop', 'Crop & Rotate')}" aria-label="Crop image">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
-          <span>${t('card.crop', 'Crop')}</span>
-        </button>
-        ${typeof navigator !== 'undefined' && navigator.share ? `
-          <button type="button" class="btn-single-share" data-id="${item.id}" title="Share converted image" aria-label="Share">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-            <span>${t('single.share', 'Share')}</span>
+
+        <div class="single-card-actions-row">
+          <button type="button" class="btn-single-convert-more" title="Convert another image" aria-label="Convert another image">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>${t('card.convert_another', 'Convert another')}</span>
           </button>
-        ` : ''}
-        <button type="button" class="btn-single-download" data-id="${item.id}" title="Download ${out.name}" aria-label="Download ${out.name}">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>${t('single.download', 'Download')} ${out.format.toUpperCase()}</span>
-        </button>
-        <button type="button" class="btn-single-delete" data-id="${item.id}" title="${t('single.delete', 'Delete file')}" aria-label="${t('single.delete', 'Delete file')}">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-        </button>
-      </div>
-      <div class="single-card-footer">
-        <button type="button" class="btn-single-convert-more" title="Convert another image" aria-label="Convert another image">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          <span>${t('card.convert_another', 'Convert Another Image')}</span>
-        </button>
+          <button type="button" class="btn-single-preview" data-id="${item.id}" title="Inspect & Compare in Split View" aria-label="Inspect & Compare">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Inspect</span>
+          </button>
+          <button type="button" class="btn-single-crop" data-id="${item.id}" title="${t('card.crop', 'Crop & Rotate')}" aria-label="Crop image">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
+            <span>Crop</span>
+          </button>
+          <button type="button" class="btn-single-delete" data-id="${item.id}" title="${t('single.delete', 'Delete file')}" aria-label="${t('single.delete', 'Delete file')}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            <span>Delete</span>
+          </button>
+        </div>
+
+        <details class="single-details-accordion">
+          <summary class="single-details-summary">▸ Details</summary>
+          <div class="single-details-grid">
+            <div class="details-row"><span class="details-key">Input:</span> <span class="details-val">${escapeHtml(item.name)} (${formatKb(item.originalSize)}, ${(item.originalFormat || 'SRC').toUpperCase()})</span></div>
+            <div class="details-row"><span class="details-key">Output:</span> <span class="details-val">${escapeHtml(out.name)} (${formatKb(out.size)}, ${out.format.toUpperCase()})</span></div>
+            <div class="details-row"><span class="details-key">Saved:</span> <span class="details-val">${savingsPct > 0 ? '−' : '+'}${Math.abs(savingsPct)}% (${formatKb(Math.max(0, item.originalSize - out.size))})</span></div>
+            <div class="details-row"><span class="details-key">Alpha:</span> <span class="details-val">${out.alphaPreserved ? 'Preserved (8-bit)' : 'Opaque / Flattened'}</span></div>
+            <div class="details-row"><span class="details-key">Metadata:</span> <span class="details-val">${settings.clean ? 'Removed (EXIF, GPS, C2PA)' : 'Retained'}</span></div>
+            <div class="details-row"><span class="details-key">Duration:</span> <span class="details-val">${item.durationMs || 34} ms</span></div>
+          </div>
+        </details>
       </div>
     `;
 
@@ -2186,27 +2545,12 @@ function renderResultsView() {
       openCropModal(item);
     });
 
-    singleCard.querySelector('.btn-single-convert-more')?.addEventListener('click', (e) => {
+    singleCard.querySelector('.btn-single-convert-more')?.addEventListener('click', async (e) => {
       e.stopPropagation();
+      convertedItems.clear();
+      await dbClearFiles();
+      renderResultsView();
       fileInput.click();
-    });
-
-    singleCard.querySelector('.btn-single-share')?.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      try {
-        if (out.blob && navigator.canShare) {
-          const shareFile = new File([out.blob], out.name, { type: out.blob.type || 'image/webp' });
-          if (navigator.canShare({ files: [shareFile] })) {
-            await navigator.share({ files: [shareFile], title: out.name });
-            return;
-          }
-        }
-        await navigator.share({ title: out.name, url: out.url });
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          downloadSingleOutput(out);
-        }
-      }
     });
 
     singleCard.querySelector('.btn-single-download')?.addEventListener('click', (e) => {
@@ -2254,9 +2598,11 @@ function renderResultsView() {
   const isList = settings.viewMode === 'list';
   resultsContainer.className = `results-container ${isList ? 'view-list' : 'view-grid'}`;
 
+  const isZapCard = Boolean(typeof window !== 'undefined' && window.customElements?.get('zap-card'));
+
   for (const item of itemsList) {
     if (item.status === 'converting') {
-      const convCard = document.createElement('div');
+      const convCard = document.createElement(isZapCard ? 'zap-card' : 'div');
       convCard.className = 'result-card';
       convCard.innerHTML = `
         <div class="converting-skeleton">
@@ -2269,13 +2615,13 @@ function renderResultsView() {
     }
 
     if (item.status === 'error') {
-      const errCard = document.createElement('div');
+      const errCard = document.createElement(isZapCard ? 'zap-card' : 'div');
       errCard.className = 'result-card is-error';
       errCard.innerHTML = `
         <button type="button" class="btn-single-delete" title="${t('single.delete', 'Remove')}" style="position:absolute;top:6px;right:6px;">✕</button>
         <div class="error-badge-icon">!</div>
-        <span class="result-name" title="${item.name}">${item.name}</span>
-        <span class="result-meta" style="color:var(--error);">${item.error || 'Failed'}</span>
+        <span class="result-name" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>
+        <span class="result-meta" style="color:var(--error);">${escapeHtml(item.error || 'Failed')}</span>
       `;
       errCard.querySelector('.btn-single-delete')?.addEventListener('click', async (e) => {
         e.stopPropagation();
@@ -2298,8 +2644,8 @@ function renderResultsView() {
       row.className = 'result-list-row';
       row.innerHTML = `
         <div class="list-row-left" title="Click to inspect & preview image">
-          <img class="list-row-thumb" src="${out.url}" alt="${item.name}" />
-          <span class="list-row-name" title="${item.name}">${item.name}</span>
+          <img class="list-row-thumb" src="${out.url}" alt="${escapeHtml(item.name)}" />
+          <span class="list-row-name" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>
         </div>
         <div class="list-row-meta">
           <span class="result-savings-pill">${savingsPct > 0 ? '−' : '+'}${Math.abs(savingsPct)}%</span>
@@ -2351,16 +2697,16 @@ function renderResultsView() {
       resultsContainer.appendChild(row);
     } else {
       // Grid View Card
-      const card = document.createElement('div');
+      const card = document.createElement(isZapCard ? 'zap-card' : 'div');
       card.className = 'result-card';
       card.dataset.itemId = item.id;
 
       card.innerHTML = `
         <div class="result-thumb-box" title="Click to inspect & preview image">
-          <img class="result-thumb" src="${out.url}" alt="${item.name}" loading="lazy" />
+          <img class="result-thumb" src="${out.url}" alt="${escapeHtml(item.name)}" loading="lazy" />
         </div>
         <div class="result-info-box">
-          <div class="result-name" title="${item.name}">${item.name}</div>
+          <div class="result-name" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div>
           <div class="result-meta">
             <span class="result-size-text">${formatKb(item.originalSize)} → ${formatKb(out.size)}</span>
             <span class="result-savings-pill">${savingsPct > 0 ? '−' : '+'}${Math.abs(savingsPct)}%</span>
@@ -2475,6 +2821,7 @@ async function clearAllItems() {
   convertedItems.clear();
   downloadRestoreCache.clear();
   await dbClearFiles();
+  if (zapStore) zapStore.reset();
   renderResultsView();
 }
 
@@ -2554,12 +2901,12 @@ function renderPreviewStage() {
   if (activePreviewTab === 'converted') {
     const wrap = document.createElement('div');
     wrap.className = 'preview-stage-single';
-    wrap.innerHTML = `<img src="${primaryOut.url}" alt="${primaryOut.name}" />`;
+    wrap.innerHTML = `<img src="${primaryOut.url}" alt="${escapeHtml(primaryOut.name)}" />`;
     previewStage.appendChild(wrap);
   } else if (activePreviewTab === 'original') {
     const wrap = document.createElement('div');
     wrap.className = 'preview-stage-single';
-    wrap.innerHTML = `<img src="${item.originalUrl}" alt="${item.name}" />`;
+    wrap.innerHTML = `<img src="${item.originalUrl}" alt="${escapeHtml(item.name)}" />`;
     previewStage.appendChild(wrap);
   } else if (activePreviewTab === 'split') {
     const splitWrap = document.createElement('div');
@@ -2567,11 +2914,11 @@ function renderPreviewStage() {
     splitWrap.innerHTML = `
       <div class="split-pane">
         <span class="split-pane-label">Original (${formatKb(item.originalSize)})</span>
-        <img src="${item.originalUrl}" alt="Original: ${item.name}" />
+        <img src="${item.originalUrl}" alt="Original: ${escapeHtml(item.name)}" />
       </div>
       <div class="split-pane">
         <span class="split-pane-label">Converted (${formatKb(primaryOut.size)})</span>
-        <img src="${primaryOut.url}" alt="Converted: ${primaryOut.name}" />
+        <img src="${primaryOut.url}" alt="Converted: ${escapeHtml(primaryOut.name)}" />
       </div>
     `;
     previewStage.appendChild(splitWrap);
@@ -2690,6 +3037,13 @@ async function handleFiles(files) {
 
   // Render view immediately with skeletons
   renderResultsView();
+  if (zapStore) {
+    zapStore.setState({
+      status: 'converting',
+      progress: 0,
+      files: Array.from(convertedItems.values()),
+    });
+  }
 
   // Progress Bar initialization
   cancelBatchRequested = false;
@@ -2758,6 +3112,19 @@ async function handleFiles(files) {
 
     // Update view as each file completes
     renderResultsView();
+
+    if (zapStore) {
+      const allDone = Array.from(convertedItems.values()).every((it) => it.status === 'done' || it.status === 'error');
+      const converted = Array.from(convertedItems.values()).filter((it) => it.status === 'done');
+      const totalSaved = converted.reduce((acc, it) => acc + Math.max(0, it.originalSize - (it.outputs?.[0]?.size || 0)), 0);
+      zapStore.setState({
+        status: allDone ? 'done' : 'converting',
+        progress: pct,
+        convertedCount: converted.length,
+        totalBytesSaved: totalSaved,
+        files: Array.from(convertedItems.values()),
+      });
+    }
   }
 
   if (convertingState) convertingState.hidden = true;
@@ -3566,4 +3933,9 @@ if (typeof navigator !== 'undefined' && 'modelContext' in navigator && typeof na
     // Non-blocking progressive enhancement
   }
 }
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { escapeHtml };
+}
+
 

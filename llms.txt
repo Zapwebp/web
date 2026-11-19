@@ -1,6 +1,13 @@
 # Zapwebp
 
-> Convert correctly. A universal image conversion engine that preserves transparency, strips metadata, and runs everywhere (browser, terminal, build tools, CI, AI agents). Open source, MIT licensed.
+> AI-ready image infrastructure built for developers who need reliable, reproducible, privacy-conscious image processing.
+>
+> Stop marketing features. Start proving guarantees:
+> 1. Correctness: Conversion is not enough. Verify the result (alpha preserved at origin pixel 0,0).
+> 2. Reproducibility: Same input, same configuration, same engine version across OSes (verified via MANIFEST.json).
+> 3. Privacy: Local-first processing. No mandatory cloud uploads. Zero telemetry.
+> 4. Extensibility: Open plugin architecture, not a closed ecosystem (scaffold via create-zapwebp).
+> 5. Universality: One engine across Web (WASM), CLI, VS Code, and AI Agents (MCP).
 
 ## Core
 
@@ -9,6 +16,8 @@
 - [CLI](https://zapwebp-docs.vercel.app/cli): Terminal tool.
 - [MCP](https://zapwebp-docs.vercel.app/mcp): AI agent integration.
 - [AI Integration](https://zapwebp-docs.vercel.app/ai-integration): Developer primitives and vision model integration guide.
+- [Reports](https://zapwebp-docs.vercel.app/reports): Performance and carbon offset reports.
+- [Smart Optimization](https://zapwebp-docs.vercel.app/smart): Deterministic content analysis and automatic profiling.
 - [Lossless](https://zapwebp-docs.vercel.app/lossless): Lossless truth, pixel verification, and size impact.
 - [Scaffolding](https://zapwebp-docs.vercel.app/scaffolding): Agent-native plugin starter and CLI generator.
 - [Reliability](https://zapwebp-docs.vercel.app/reliability): Production reliability masterplan across six core dimensions.
@@ -33,11 +42,15 @@
 - [Next.js](https://zapwebp-docs.vercel.app/plugins/next): Next.js build plugin.
 - [GitHub Action](https://zapwebp-docs.vercel.app/plugins/github-action): PR image optimization action.
 - [Storage](https://zapwebp-docs.vercel.app/plugins/storage): Cloud storage upload interceptor.
+- [Supabase Storage](https://zapwebp-docs.vercel.app/storage/supabase): Supabase Storage pre-upload conversion guide.
+- [Firebase Storage](https://zapwebp-docs.vercel.app/storage/firebase): Firebase Storage pre-upload conversion guide.
+- [Neocities Storage](https://zapwebp-docs.vercel.app/storage/neocities): Neocities Storage pre-upload conversion guide.
 - [VS Code](https://zapwebp-docs.vercel.app/plugins/vscode): VS Code / Open VSX extension.
 - [Laravel](https://zapwebp-docs.vercel.app/plugins/laravel): Laravel service provider.
 - [Lens](https://zapwebp-docs.vercel.app/plugins/lens): Image inspection and visual diffing.
 - [Crop](https://zapwebp-docs.vercel.app/plugins/crop): Pure transform crop plugin with auto/manual modes and face detection.
 - [ICO / Favicon](https://zapwebp-docs.vercel.app/plugins/format-ico): High-resolution multi-size ICO plugin and favicon suite generator.
+- [Compressor](https://zapwebp-docs.vercel.app/plugins/compressor): Intelligent size reduction plugin with binary search optimization and adaptive downscaling.
 
 ## Community & Governance
 
@@ -57,6 +70,8 @@
 - [Lossless Raw](/lossless.md): Lossless truth, pixel verification, and size impact analysis.
 - [Scaffolding Raw](/scaffolding.md): Agent-native plugin starter and CLI scaffolding guide.
 - [Reliability Raw](/reliability.md): Production reliability masterplan across six core dimensions.
+- [Reports Raw](/reports.md): Transaction journal aggregation and Green Code carbon calculations.
+- [Smart Raw](/smart.md): Deterministic 10-profile content optimization and signal analysis.
 - [AI Integration Raw](/ai-integration.md): AI integration support and developer pipeline primitives.
 - [Clean Raw](/clean.md): Strip metadata (EXIF, XMP, C2PA) from images.
 - [Formats Raw](/formats.md): Supported input and output formats.
@@ -74,10 +89,15 @@
 - [Next Plugin Raw](/plugins/next.md): Next.js bundler plugin documentation.
 - [GitHub Action Raw](/plugins/github-action.md): CI/CD image optimization action.
 - [Storage Plugin Raw](/plugins/storage.md): Cloud storage integration guide.
+- [Supabase Storage Raw](/storage/supabase.md): Supabase Storage integration guide.
+- [Firebase Storage Raw](/storage/firebase.md): Firebase Storage integration guide.
+- [Neocities Storage Raw](/storage/neocities.md): Neocities Storage integration guide.
 - [VS Code Plugin Raw](/plugins/vscode.md): VS Code extension documentation.
 - [Laravel Plugin Raw](/plugins/laravel.md): Laravel package documentation.
 - [Lens Plugin Raw](/plugins/lens.md): Image inspection and visual diffing CLI.
 - [Crop Plugin Raw](/plugins/crop.md): Crop transform plugin documentation.
+- [ICO Plugin Raw](/plugins/format-ico.md): High-resolution multi-size ICO plugin and favicon suite generator.
+- [Compressor Plugin Raw](/plugins/compressor.md): Intelligent size reduction plugin documentation.
 - [Security Raw](/security.md): Security policy and vulnerability reporting.
 - [Code of Conduct Raw](/code-of-conduct.md): Contributor Covenant standards.
 - [Contributing Raw](/contributing.md): Developer guide and PR checklist.
